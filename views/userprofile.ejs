@@ -58,9 +58,9 @@
 
                     <div class="lg:w/8/12 flex-1 flex flex-col lg:items-start items-center">
 
-                        <h2 class="font-semibold lg:text-2xl text-lg mb-2">
+                        <h3 class="font-semibold lg:text-2xl text-lg mb-2">
                             <%= data1.firstname + "  " + data1.lastname %>
-                        </h2>
+                        </h3>
                         <p class="lg:text-left mb-2 text-center  dark:text-gray-100"> Nam liber tempor cum soluta nobis
                             eleifend option congue nihil imperdiet
                             doming id quod mazim placerat facer possim assum</p>
@@ -71,10 +71,12 @@
 
 
                         <div class="capitalize flex font-semibold space-x-3 text-center text-sm my-2">
+                            <% if (data1.id !== data.id) { %> 
                                 <% if (isFollowing) { %>
                                         <a href="/follow/<%= data1.id %>" class="bg-gray-300 shadow-sm p-2 px-6 rounded-md dark:bg-gray-700">Unfollow</a>
                                 <% } else { %>
                                     <a href="/follow/<%= data1.id %>" class="bg-gray-300 shadow-sm p-2 px-6 rounded-md dark:bg-gray-700">Follow</a>
+                                <% } %>
                                 <% } %>
                             <a href="/chat?chat_id=<%= data1.id %>"
                                 class="bg-pink-500 shadow-sm p-2 pink-500 px-6 rounded-md text-white hover:text-white hover:bg-pink-600">
@@ -135,8 +137,7 @@
                                             name="chatbubble-ellipses" class="mr-1"></ion-icon>
                                         <%= item.totalComment %>
                                     </a>
-                                    <a href="#story-modal<%= index %>" uk-toggle class="flex items-center"> <ion-icon
-                                            name="pricetags" class="mr-1"></ion-icon> 0 </a>
+                                    
                                 </div>
 
                             </div>
@@ -202,15 +203,21 @@
                                 <a href="/postlike/<%= item.id %>">
                                     <div class="flex items-center space-x-3">
                                         <div class="flex items-center">
-                                            <img src="/assets/images/avatars/avatar-1.jpg" alt=""
-                                                class="w-6 h-6 rounded-full border-2 border-white">
-                                            <img src="/assets/images/avatars/avatar-4.jpg" alt=""
-                                                class="w-6 h-6 rounded-full border-2 border-white -ml-2">
-                                            <img src="/assets/images/avatars/avatar-2.jpg" alt=""
-                                                class="w-6 h-6 rounded-full border-2 border-white -ml-2">
+                                            <% if (item.totalLike>= 1) { %>
+                                                <% likesData[item._id].forEach(like=> { %>
+                                                    <img src="/images/<%= like.profile_pic %>" alt=""
+                                                        class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-900 -ml-2 object-cover">
+                                                    <% }) %>
                                         </div>
                                         <div>
-                                            Liked <strong> Johnson</strong> and <strong> 209 Others </strong>
+                                            Liked <strong>
+                                                <%= item.lastLike %>
+                                            </strong> <strong>
+                                                <% if (item.totalLike>= 2) { %>
+                                                    and <%= item.totalLike - 1 %> Others
+                                            </strong>
+                                            <%}%>
+                                                <% } %>
                                         </div>
                                     </div>
                                 </a>

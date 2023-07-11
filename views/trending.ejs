@@ -196,13 +196,19 @@
                                 <a href="/postlike/<%= item.id %>">
                                     <div class="flex items-center space-x-3">
                                         <div class="flex items-center">
+                                            <% if (item.totalLike >= 1) { %> 
                                             <% likesData[item._id].forEach(like=> { %>
                                                 <img src="/images/<%= like.profile_pic %>" alt=""
                                                     class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-900 -ml-2 object-cover">
                                                 <% }) %>
                                         </div>
                                         <div>
-                                            Liked <strong><%= item.lastLike %></strong> and <strong> <%= item.totalLike - 1 %> Others </strong>
+                                            Liked <strong><%= item.lastLike %></strong> <strong>
+                                                <% if (item.totalLike >= 2) { %> 
+                                                      and <%= item.totalLike - 1 %> Others
+                                            </strong>
+                                            <%}%>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </a>

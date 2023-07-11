@@ -134,7 +134,7 @@ exports.logout = async (req, res) => {
 exports.feed = async (req, res) => {
     await storage.init();
     var uid = await storage.getItem('userid');
-    if (!uid) {
+    if (uid) {
         var data = await loginModel.findOne({ _id: uid })
 
         // ---- user is online ----
@@ -408,7 +408,7 @@ exports.like = async (req, res) => {
     var post = await postModel.findById(id);
     if (post.like.includes(uid)) {
         // ---- if already liked post than unlike ----
-        await postModel.findByIdAndUpdate(id, { $pull: { like: uid } });
+        await postModel.findByIdAndUpdate(id, { $pull: { like: uid },$unset: { lastLike: 1 } });
 
     } else {
         // ---- if not liked post than like ----
@@ -418,8 +418,12 @@ exports.like = async (req, res) => {
     var updatedPost = await postModel.findById(id);
     updatedPost.totalLike = updatedPost.like.length;
 
-    var lastThreeLikes = updatedPost.like.slice(-3);
-    updatedPost.lastThreeLikes = lastThreeLikes;
+    if (updatedPost.totalLike > 0) {
+        // ---- Get the username of the last user who liked the post ----
+        var lastUserId = updatedPost.like[updatedPost.totalLike - 1];
+        var lastLikeUser = await loginModel.findById(lastUserId);
+        updatedPost.lastLike = lastLikeUser.firstname + " " + lastLikeUser.lastname;
+    } 
 
     await updatedPost.save();
 
@@ -433,7 +437,6 @@ exports.search = async (req, res) => {
     var uid = await storage.getItem('userid');
     var data = await loginModel.findOne({ _id: uid })
     var total_post = await postModel.countDocuments({ userId: uid });
-    var newRegister = await loginModel.find({ _id: { $ne: uid } }).sort({ _id: -1 }).limit(4);
 
     // ---- count following / followers ----
     const user = await loginModel.findById(uid);
@@ -446,10 +449,9 @@ exports.search = async (req, res) => {
     if (searchUser) {
         const regex = new RegExp(searchUser, 'i');
         var searchData = await loginModel.find({ firstname: regex });
-        console.log(searchData);
     }
 
-    res.render('search', { data: data, total_post: total_post, followingCount: followingCount, followerCount: followerCount, newRegister: newRegister, followstatus: followstatus, searchData: searchData });
+    res.render('search', { data: data, total_post: total_post, followingCount: followingCount, followerCount: followerCount, followstatus: followstatus, searchData: searchData });
 }
 
 // ---- retrive followers ----
@@ -527,9 +529,15 @@ exports.userProfile = async (req, res) => {
             postComments[postItem._id] = comments;
         }
 
+        var likesData = {};
+        for (const postItem of post_img1) {
+            const likeUsers = await loginModel.find({ _id: { $in: postItem.like } }).sort({ _id: -1 }).limit(3);
+            likesData[postItem._id] = likeUsers;
+        }
+
         var isFollowing = user.following.includes(id);
 
-        res.render('userprofile', { data: data, total_post: total_post, data1: data1, total_post1: total_post1, user: user, followingCount: followingCount, followerCount: followerCount, followingCount1: followingCount1, followerCount1: followerCount1, post_img1: post_img1, postComments: postComments, isFollowing: isFollowing })
+        res.render('userprofile', { data: data, total_post: total_post, data1: data1, total_post1: total_post1, user: user, followingCount: followingCount, followerCount: followerCount, followingCount1: followingCount1, followerCount1: followerCount1, post_img1: post_img1, postComments: postComments, isFollowing: isFollowing, likesData:likesData })
     }
 }
 

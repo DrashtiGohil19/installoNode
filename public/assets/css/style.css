@@ -98,12 +98,12 @@
 .dark .header_dropdown a.see-all,
 .dark .header_dropdown h4,
 .dark h1,
-.dark h2,
+/* .dark h2, */
 .dark h3,
-.dark h4,
+/* .dark h4, */
 .dark h5,
 .dark h6,
-.dark a,
+/* .dark a, */
 .dark .dark-tabs a {
   color: #eeeeee !important;
 }

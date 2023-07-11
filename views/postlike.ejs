@@ -70,12 +70,12 @@
                                                     <span class="block capitalize font-semibold">
                                                         <%= item.firstname+" "+ item.lastname %>
                                                 </span>
-                                                <span class=" block capitalize text-sm"> India
-                                                    </span>
+                                                
                                                 </div>
                                             </div>
 
                                             <% if (followstatus.following.includes(item.id)) { %>
+                                                <% if (item.id !== data.id) { %>
                                                 <a href="/follow/<%= item._id %>"
                                                     class="border border-gray-200 font-semibold px-4 py-1 rounded-full hover:bg-pink-600 hover:text-white hover:border-pink-600 dark:border-gray-800">
                                                     Unfollow
@@ -85,6 +85,7 @@
                                                         class="border border-gray-200 font-semibold px-4 py-1 rounded-full hover:bg-pink-600 hover:text-white hover:border-pink-600 dark:border-gray-800">
                                                         Follow
                                                     </a>
+                                                    <% } %>
                                                     <% } %>
 
                                         </div>
